@@ -19,6 +19,12 @@ public class CamelRoute extends RouteBuilder {
     // CXF webservice using code first approach
     private String uri = "cxf:/incident?serviceClass=" + IncidentService.class.getName();
 
+	/*
+	 * route1 = from(uri).to("log:input");
+	 * route2 = from(uri).to("direct:reportIncident"); 
+	 * route3 = from(uri).to("direct:statusIncident");
+	 */
+    
     @Override
     public void configure() throws Exception {
         from(uri)

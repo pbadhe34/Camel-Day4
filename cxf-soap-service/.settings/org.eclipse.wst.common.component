@@ -4,6 +4,8 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/MATA-INF"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/spring"/>
         <property name="context-root" value="camel-soap-cxf-app"/>
         <property name="java-output-path" value="/camel-cxf-soap-service/target/classes"/>
     </wb-module>
