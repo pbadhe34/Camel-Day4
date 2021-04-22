@@ -4,7 +4,7 @@ import org.apache.camel.main.Main;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.json.JSONObject;
 
-import com.services.Customer1;
+ 
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -32,15 +32,17 @@ public class Get_JSON_Route_Runner {
         ctx.addRoutes(router);
         
         ctx.start();
+        System.out.println("Camel is running contusly");
         
         ProducerTemplate templ = ctx.createProducerTemplate();
-        templ.sendBody("direct:getData", "1");       
+        //templ.sendBody("direct:getData", "1");       
        
         
-        //Thread.sleep(1000);
+        Thread.sleep(5000000);
         
-        ctx.stop();
-        ctx.shutdown();
+		/*
+		 * ctx.stop(); ctx.shutdown();
+		 */
 		
 		 
          

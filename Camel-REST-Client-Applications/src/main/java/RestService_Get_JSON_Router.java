@@ -1,4 +1,7 @@
 
+import javax.jms.ConnectionFactory;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ConsumerTemplate;
 import org.apache.camel.Exchange;
@@ -8,6 +11,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.builder.ValueBuilder;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
+import org.apache.camel.component.jms.JmsComponent;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.ChoiceDefinition;
 import org.apache.camel.model.RouteDefinition;
@@ -22,11 +26,9 @@ import com.server.MyProcessor;
 import com.server.ResponseProcessor;
 import com.server.User;
 import com.services.Customer;
- 
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 //RouteBuilder EndpointRouteBuilder
 public class RestService_Get_JSON_Router extends EndpointRouteBuilder {
@@ -98,27 +100,34 @@ public class RestService_Get_JSON_Router extends EndpointRouteBuilder {
 		 * //.transform().jsonpath("$.[?(@.city =='Pune')]") //comparion predicate usage
 		 * .to("stream:out");
 		 */
-		
 
-		 	    
-	     from("direct:getData").setHeader(Exchange.HTTP_METHOD, constant("GET"))
-		    .process(new MyProcessor())
-		   .to("http://localhost:8090/REST-Service-Customer/customers/")
-		   .unmarshal().json(JsonLibrary.Jackson, Customer.class)
-		   .choice()	
-		   .when(simple("${body.id} < 10 ")).log("Lower Range of Ids").process(new Processor() {
-			
-			@Override
-			public void process(Exchange exchange) throws Exception {
-				 
-				Customer data = (Customer) exchange.getIn().getBody();
-	            System.out.println("The current  record is for  "+data.getFirstName());
-			}
-		})
-           .when(simple("${body.city} == 'Pune'")).log("*************To Pune") 
-           .when(simple("${body.city} == 'Indore'")).log("$$$$$$$$$$$$$To Indore") 
-           .otherwise().log("No Matching found");
-		 
+		// from("timer:period=250").to("direct:getData");
+
+		/*
+		 * from("direct:getData").setHeader(Exchange.HTTP_METHOD, constant("GET"))
+		 * .process(new MyProcessor())
+		 * .to("http://localhost:8090/REST-Customer/customers/")
+		 * .unmarshal().json(JsonLibrary.Jackson, Customer.class) .choice()
+		 * .when(simple("${body.id} < 10 ")).log("Id Made") //.to("file:target/ids")
+		 * 
+		 * .when(simple("${body.city} == 'Pune'")).log("THe city is Pune")
+		 * .when(simple("${body.city} == 'Indore'")).log("THe city is Indore")
+		 * 
+		 * 
+		 * .when(simple("${body.id} < 1 ")).log("Lower Range of Ids").process(new
+		 * Processor() {
+		 * 
+		 * @Override public void process(Exchange exchange) throws Exception {
+		 * 
+		 * Customer data = (Customer) exchange.getIn().getBody();
+		 * System.out.println("The current  record is for  "+data.getId()); } })
+		 * 
+		 * .when(simple("${body.city} == 'Indore'"))
+		 * .to("file:target/pune").log("*************To Pune")
+		 * .when(simple("${body.city} == 'Indore'")).log("$$$$$$$$$$$$$To Indore")
+		 * .otherwise().log("No Matching found");
+		 * 
+		 */
 		
 		// {id:2firstName:'Baba', lastName:'Vaishya', street:'M G Road', city:'Indore',
 		// state:'MP', zip:'3456', country:'Brazil'}
@@ -127,8 +136,6 @@ public class RestService_Get_JSON_Router extends EndpointRouteBuilder {
 		// $.store.book[?(@.price < 10)]
 
 		// DSL with EndpointRouteBuilder
-
-		 
 
 		/*
 		 * from("direct:getData").setHeader(Exchange.HTTP_METHOD, constant("GET"))
@@ -143,6 +150,11 @@ public class RestService_Get_JSON_Router extends EndpointRouteBuilder {
 		 * .otherwise().to("file:target/other");
 		 * 
 		 */
+
+		from("timer:tst?period=560").setHeader(Exchange.HTTP_METHOD, constant("GET"))
+		//.process(new MyProcessor())
+				.to("http://localhost:8090/REST-Service-Customer/customers/").to("jms:queue:appqueue")
+				.log("REST Output : ${body}");
 
 		/*
 		 * RouteDefinition rtd = from("direct:getData");
@@ -205,8 +217,6 @@ public class RestService_Get_JSON_Router extends EndpointRouteBuilder {
 		 * .end();
 		 */
 
-		 
-
 		// Input Processor
 		/*
 		 * rtd.process(new Processor() {
@@ -247,13 +257,18 @@ public class RestService_Get_JSON_Router extends EndpointRouteBuilder {
 
 		RestService_Get_JSON_Router router = new RestService_Get_JSON_Router();
 		ctx.addRoutes(router);
+
+		ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://127.0.0.1:61616");
+		ctx.addComponent("jms", JmsComponent.jmsComponentAutoAcknowledge(connectionFactory));
+
 		ctx.start();
 		ProducerTemplate templ = ctx.createProducerTemplate();
-		templ.sendBody("direct:getData", 2);
+		//templ.sendBody("direct:getData", 2);
 
-		// Thread.sleep(1000);
-		ctx.stop();
-		ctx.shutdown();
+		 Thread.sleep(150000);
+		//ctx.stop();
+		//ctx.shutdown();
 
 	}
+
 }
