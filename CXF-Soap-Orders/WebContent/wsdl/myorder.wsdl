@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="MyOrderService" targetNamespace="http://order.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://order.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema">
+  <import namespace="http://order.com/" schemaLocation="myorder_schema1.xsd"/>
+</schema>
+  </wsdl:types>
+  <wsdl:message name="order">
+    <wsdl:part name="parameters" element="tns:order">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="orderResponse">
+    <wsdl:part name="parameters" element="tns:orderResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="OrderEndpoint">
+    <wsdl:operation name="order">
+      <wsdl:input name="order" message="tns:order">
+    </wsdl:input>
+      <wsdl:output name="orderResponse" message="tns:orderResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="MyOrderServiceSoapBinding" type="tns:OrderEndpoint">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="order">
+      <soap:operation soapAction="urn:Order" style="document"/>
+      <wsdl:input name="order">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="orderResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MyOrderService">
+    <wsdl:port name="MyOrderPort" binding="tns:MyOrderServiceSoapBinding">
+      <soap:address location="http://localhost:8090/CXF-Soap-Orders/services/MyOrderPort"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

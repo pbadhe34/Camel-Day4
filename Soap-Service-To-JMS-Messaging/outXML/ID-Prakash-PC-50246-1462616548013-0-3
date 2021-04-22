@@ -1,0 +1,1 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ns2:orderResponse xmlns:ns2="http://order.com/"><ns2:return>Thanks Viju Malhotra,  your order for the Motor Spare Parts  with quantity as  501</ns2:return></ns2:orderResponse></soap:Body></soap:Envelope>/soap:Envelope/soap:Body/
